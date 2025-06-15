@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{% if form.titre.data %}Modifier{% else %}Ajouter{% endif %} une tâche</h2>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+          {{ form.titre.label(class="form-label") }} {{ form.titre(class="form-control") }}
+
+    </div>
+    <div class="mb-3">
+         {{ form.submit(class="btn btn-primary") }}
+
+    </div>
+  
+   
+</form>
+{% endblock %}

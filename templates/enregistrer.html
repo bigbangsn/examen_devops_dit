@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Inscription</h2>
+<form method="POST">
+    
+          {{ form.hidden_tag() }}
+        
+        <div class="mb-3">
+{{ form.nom.label(class="form-label") }} 
+             {{ form.nom( class="form-control") }}
+        </div>
+             
+       <div class="mb-3">
+ {{ form.password.label(class="form-label") }}
+                {{ form.password(class="form-control") }}
+       </div>
+           
+        
+         <div class="mb-3">
+  {{ form.submit(class="btn btn-primary") }}
+         </div>
+           
+        </tr>
+    </table>
+  
+   
+ 
+    
+</form>
+<p>Déjà inscrit ? <a href="{{ url_for('connexion') }}">Connexion</a></p>
+{% endblock %}
