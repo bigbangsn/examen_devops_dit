@@ -118,4 +118,6 @@ pytest --cov=taskmanager
 
 ## Licence
 
-Ce projet est sous licence MIT - voir le fichier LICENSE pour plus de détails.
+Ce projet est un projet d'école pour le cours de DevOps, réalisé par des étudiants pour l'école DIT (Dakar Institut of
+Technologie).
+
