@@ -1,17 +1,124 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>{% if form.titre.data %}Modifier{% else %}Ajouter{% endif %} une tâche</h2>
-<form method="POST">
-    {{ form.hidden_tag() }}
-    <div class="mb-3">
-          {{ form.titre.label(class="form-label") }} {{ form.titre(class="form-control") }}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h2 class="card-title h4 mb-0">
+                    <i class="bi {% if form.titre.data %}bi-pencil-square{% else %}bi-plus-circle{% endif %} me-2"></i>
+                    {% if form.titre.data %}Modifier{% else %}Ajouter{% endif %} une tâche
+                </h2>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="" novalidate class="needs-validation">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-4">
+                        {{ form.titre.label(class="form-label fw-bold") }}
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-card-heading"></i></span>
+                            {% if form.titre.errors %}
+                                {{ form.titre(class="form-control is-invalid", aria_describedby="titreFeedback") }}
+                                <div id="titreFeedback" class="invalid-feedback">
+                                    {% for error in form.titre.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.titre(class="form-control", placeholder="Entrez le titre de la tâche") }}
+                                <div class="form-text text-muted">
+                                    Donnez un titre clair et concis à votre tâche
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
 
-    </div>
-    <div class="mb-3">
-         {{ form.submit(class="btn btn-primary") }}
+                    <div class="mb-4">
+                        {{ form.description.label(class="form-label fw-bold") }}
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-text-paragraph"></i></span>
+                            {% if form.description.errors %}
+                                {{ form.description(class="form-control is-invalid", aria_describedby="descriptionFeedback", rows=4) }}
+                                <div id="descriptionFeedback" class="invalid-feedback">
+                                    {% for error in form.description.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.description(class="form-control", placeholder="Décrivez la tâche en détail", rows=4) }}
+                            {% endif %}
+                        </div>
+                    </div>
 
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.status.label(class="form-label fw-bold") }}
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-list-check"></i></span>
+                                    {% if form.status.errors %}
+                                        {{ form.status(class="form-select is-invalid", aria_describedby="statusFeedback") }}
+                                        <div id="statusFeedback" class="invalid-feedback">
+                                            {% for error in form.status.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form.status(class="form-select") }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.priority.label(class="form-label fw-bold") }}
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-flag"></i></span>
+                                    {% if form.priority.errors %}
+                                        {{ form.priority(class="form-select is-invalid", aria_describedby="priorityFeedback") }}
+                                        <div id="priorityFeedback" class="invalid-feedback">
+                                            {% for error in form.priority.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form.priority(class="form-select") }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.due_date.label(class="form-label fw-bold") }}
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                            {% if form.due_date.errors %}
+                                {{ form.due_date(class="form-control is-invalid", aria_describedby="dueDateFeedback", type="date") }}
+                                <div id="dueDateFeedback" class="invalid-feedback">
+                                    {% for error in form.due_date.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.due_date(class="form-control", type="date") }}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ url_for('tasks.liste') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Retour
+                        </a>
+                        {{ form.submit(class="btn btn-primary px-4") }}
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer bg-light text-muted">
+                <small><i class="bi bi-info-circle me-1"></i> Tous les champs marqués d'un * sont obligatoires</small>
+            </div>
+        </div>
     </div>
-  
-   
-</form>
+</div>
 {% endblock %}

@@ -3,12 +3,12 @@
 <div class="row mb-4 align-items-center">
     <div class="col">
         <h2 class="mb-0 display-6">
-            <i class="bi bi-list-check me-2 text-primary"></i>Mes tâches
+            <i class="bi bi-list-check me-2 text-primary"></i>Toutes les tâches
         </h2>
     </div>
     <div class="col-auto">
-        <a href="{{ url_for('tasks.nouvelle') }}" class="btn btn-primary shadow-sm" aria-label="Ajouter une nouvelle tâche">
-            <i class="bi bi-plus-circle me-1"></i> Nouvelle tâche
+        <a href="{{ url_for('tasks.liste') }}" class="btn btn-outline-primary shadow-sm me-2" aria-label="Voir mes tâches">
+            <i class="bi bi-person-check me-1"></i> Mes tâches
         </a>
     </div>
 </div>
@@ -21,8 +21,8 @@
                 <h5 class="mb-0">Filtres</h5>
             </div>
             <div class="card-body">
-                <form method="get" action="{{ url_for('tasks.liste') }}" class="row g-3">
-                    <div class="col-md-3">
+                <form method="get" action="{{ url_for('tasks.admin_liste') }}" class="row g-3">
+                    <div class="col-md-2">
                         <label for="status" class="form-label">Statut</label>
                         <select name="status" id="status" class="form-select">
                             <option value="">Tous les statuts</option>
@@ -31,7 +31,7 @@
                             <option value="completed">Terminée</option>
                         </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label for="priority" class="form-label">Priorité</label>
                         <select name="priority" id="priority" class="form-select">
                             <option value="">Toutes les priorités</option>
@@ -40,7 +40,16 @@
                             <option value="high">Haute</option>
                         </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
+                        <label for="user_id" class="form-label">Utilisateur</label>
+                        <select name="user_id" id="user_id" class="form-select">
+                            <option value="">Tous les utilisateurs</option>
+                            {% for user in users %}
+                            <option value="{{ user.id }}">{{ user.nom }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
                         <label for="category_id" class="form-label">Catégorie</label>
                         <select name="category_id" id="category_id" class="form-select">
                             <option value="">Toutes les catégories</option>
@@ -49,11 +58,22 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-3 d-flex align-items-end">
+                    <div class="col-md-2">
+                        <label for="sort_by" class="form-label">Trier par</label>
+                        <select name="sort_by" id="sort_by" class="form-select">
+                            <option value="due_date">Date d'échéance</option>
+                            <option value="created_at">Date de création</option>
+                            <option value="priority">Priorité</option>
+                            <option value="status">Statut</option>
+                            <option value="user">Utilisateur</option>
+                            <option value="titre">Titre</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary me-2">
                             <i class="bi bi-filter me-1"></i> Filtrer
                         </button>
-                        <a href="{{ url_for('tasks.liste') }}" class="btn btn-outline-secondary">
+                        <a href="{{ url_for('tasks.admin_liste') }}" class="btn btn-outline-secondary">
                             <i class="bi bi-x-circle me-1"></i> Réinitialiser
                         </a>
                     </div>
@@ -73,7 +93,7 @@
                         <h5 class="mb-0">Liste des tâches</h5>
                     </div>
                     <div class="col-auto">
-                        <span class="badge bg-primary rounded-pill">{{ taches|length }}</span>
+                        <span class="badge bg-primary rounded-pill">{{ pagination.total_count }}</span>
                     </div>
                 </div>
             </div>
@@ -84,6 +104,10 @@
                             <div class="col-md-8">
                                 <h5 class="mb-1 fw-bold">{{ tache.titre }}</h5>
                                 <div class="d-flex align-items-center mt-2">
+                                    <small class="text-muted me-3">
+                                        <i class="bi bi-person me-1"></i> {{ user_names[tache.personne_id] }}
+                                    </small>
+                                    
                                     {% if tache.created_at %}
                                     <small class="text-muted me-3">
                                         <i class="bi bi-calendar-event me-1"></i> Créée le {{ tache.created_at.strftime('%d/%m/%Y') }}
@@ -114,10 +138,10 @@
                             </div>
                             <div class="col-md-4 mt-3 mt-md-0 text-md-end">
                                 <div class="btn-group" role="group" aria-label="Actions pour cette tâche">
-                                    <a href="{{ url_for('tasks.editer', tache_id=tache.id) }}" class="btn btn-outline-primary" aria-label="Modifier cette tâche">
+                                    <a href="{{ url_for('tasks.admin_editer', tache_id=tache.id) }}" class="btn btn-outline-primary" aria-label="Modifier cette tâche">
                                         <i class="bi bi-pencil-square"></i> <span class="d-none d-md-inline">Modifier</span>
                                     </a>
-                                    <a href="{{ url_for('tasks.supprimer', tache_id=tache.id) }}" class="btn btn-outline-danger delete-btn" aria-label="Supprimer cette tâche">
+                                    <a href="{{ url_for('tasks.admin_supprimer', tache_id=tache.id) }}" class="btn btn-outline-danger delete-btn" aria-label="Supprimer cette tâche">
                                         <i class="bi bi-trash"></i> <span class="d-none d-md-inline">Supprimer</span>
                                     </a>
                                 </div>
@@ -126,7 +150,7 @@
                     </div>
                 {% endfor %}
             </div>
-
+            
             {% if pagination and pagination.total_pages > 1 %}
             <!-- Pagination -->
             <div class="card-footer bg-light py-3">
@@ -134,20 +158,20 @@
                     <ul class="pagination justify-content-center mb-0">
                         <!-- Previous page button -->
                         <li class="page-item {% if pagination.page == 1 %}disabled{% endif %}">
-                            <a class="page-link" href="{{ url_for('tasks.liste', page=pagination.page-1, per_page=pagination.per_page, status=filters.status, priority=filters.priority, category_id=filters.category_id, sort_by=filters.sort_by, sort_dir=filters.sort_dir) }}" aria-label="Précédent">
+                            <a class="page-link" href="{{ url_for('tasks.admin_liste', page=pagination.page-1, per_page=pagination.per_page, status=filters.status, priority=filters.priority, user_id=filters.user_id, category_id=filters.category_id, sort_by=filters.sort_by, sort_dir=filters.sort_dir) }}" aria-label="Précédent">
                                 <span aria-hidden="true">&laquo;</span>
                                 <span class="visually-hidden">Précédent</span>
                             </a>
                         </li>
-
+                        
                         <!-- Page numbers -->
                         {% set start_page = [1, pagination.page - 2]|max %}
                         {% set end_page = [pagination.total_pages, start_page + 4]|min %}
                         {% set start_page = [1, end_page - 4]|max %}
-
+                        
                         {% if start_page > 1 %}
                         <li class="page-item">
-                            <a class="page-link" href="{{ url_for('tasks.liste', page=1, per_page=pagination.per_page, status=filters.status, priority=filters.priority, category_id=filters.category_id, sort_by=filters.sort_by, sort_dir=filters.sort_dir) }}">1</a>
+                            <a class="page-link" href="{{ url_for('tasks.admin_liste', page=1, per_page=pagination.per_page, status=filters.status, priority=filters.priority, user_id=filters.user_id, category_id=filters.category_id, sort_by=filters.sort_by, sort_dir=filters.sort_dir) }}">1</a>
                         </li>
                         {% if start_page > 2 %}
                         <li class="page-item disabled">
@@ -155,13 +179,13 @@
                         </li>
                         {% endif %}
                         {% endif %}
-
+                        
                         {% for p in range(start_page, end_page + 1) %}
                         <li class="page-item {% if p == pagination.page %}active{% endif %}">
-                            <a class="page-link" href="{{ url_for('tasks.liste', page=p, per_page=pagination.per_page, status=filters.status, priority=filters.priority, category_id=filters.category_id, sort_by=filters.sort_by, sort_dir=filters.sort_dir) }}">{{ p }}</a>
+                            <a class="page-link" href="{{ url_for('tasks.admin_liste', page=p, per_page=pagination.per_page, status=filters.status, priority=filters.priority, user_id=filters.user_id, category_id=filters.category_id, sort_by=filters.sort_by, sort_dir=filters.sort_dir) }}">{{ p }}</a>
                         </li>
                         {% endfor %}
-
+                        
                         {% if end_page < pagination.total_pages %}
                         {% if end_page < pagination.total_pages - 1 %}
                         <li class="page-item disabled">
@@ -169,25 +193,25 @@
                         </li>
                         {% endif %}
                         <li class="page-item">
-                            <a class="page-link" href="{{ url_for('tasks.liste', page=pagination.total_pages, per_page=pagination.per_page, status=filters.status, priority=filters.priority, category_id=filters.category_id, sort_by=filters.sort_by, sort_dir=filters.sort_dir) }}">{{ pagination.total_pages }}</a>
+                            <a class="page-link" href="{{ url_for('tasks.admin_liste', page=pagination.total_pages, per_page=pagination.per_page, status=filters.status, priority=filters.priority, user_id=filters.user_id, category_id=filters.category_id, sort_by=filters.sort_by, sort_dir=filters.sort_dir) }}">{{ pagination.total_pages }}</a>
                         </li>
                         {% endif %}
-
+                        
                         <!-- Next page button -->
                         <li class="page-item {% if pagination.page == pagination.total_pages %}disabled{% endif %}">
-                            <a class="page-link" href="{{ url_for('tasks.liste', page=pagination.page+1, per_page=pagination.per_page, status=filters.status, priority=filters.priority, category_id=filters.category_id, sort_by=filters.sort_by, sort_dir=filters.sort_dir) }}" aria-label="Suivant">
+                            <a class="page-link" href="{{ url_for('tasks.admin_liste', page=pagination.page+1, per_page=pagination.per_page, status=filters.status, priority=filters.priority, user_id=filters.user_id, category_id=filters.category_id, sort_by=filters.sort_by, sort_dir=filters.sort_dir) }}" aria-label="Suivant">
                                 <span aria-hidden="true">&raquo;</span>
                                 <span class="visually-hidden">Suivant</span>
                             </a>
                         </li>
                     </ul>
                 </nav>
-
+                
                 <!-- Page size selector -->
                 <div class="d-flex justify-content-center mt-3">
                     <div class="btn-group" role="group" aria-label="Nombre d'éléments par page">
                         {% for size in [5, 10, 25, 50] %}
-                        <a href="{{ url_for('tasks.liste', page=1, per_page=size, status=filters.status, priority=filters.priority, category_id=filters.category_id, sort_by=filters.sort_by, sort_dir=filters.sort_dir) }}" 
+                        <a href="{{ url_for('tasks.admin_liste', page=1, per_page=size, status=filters.status, priority=filters.priority, user_id=filters.user_id, category_id=filters.category_id, sort_by=filters.sort_by, sort_dir=filters.sort_dir) }}" 
                            class="btn btn-sm {% if pagination.per_page == size %}btn-primary{% else %}btn-outline-primary{% endif %}">
                             {{ size }}
                         </a>
@@ -206,7 +230,7 @@
         <i class="bi bi-info-circle-fill fs-4 me-3"></i>
         <div>
             <h5 class="alert-heading mb-1">Aucune tâche</h5>
-            <p class="mb-0">Vous n'avez pas encore de tâches. Cliquez sur "Nouvelle tâche" pour commencer.</p>
+            <p class="mb-0">Aucune tâche ne correspond aux critères de recherche.</p>
         </div>
     </div>
 </div>

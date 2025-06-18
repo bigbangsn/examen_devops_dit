@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Catégories{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">
+            <i class="bi bi-folder2-open me-2 text-primary"></i>Mes Catégories
+        </h1>
+        <a href="{{ url_for('categories.nouvelle') }}" class="btn btn-primary shadow-sm">
+            <i class="bi bi-folder-plus me-1"></i> Nouvelle Catégorie
+        </a>
+    </div>
+
+    {% if categories %}
+    <div class="row">
+        {% for categorie in categories %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header text-white d-flex justify-content-between align-items-center bg-primary" 
+                     {% if categorie.couleur %}style="background-color: {{ categorie.couleur }} !important;"{% endif %}>
+                    <h5 class="mb-0">
+                        <i class="bi bi-tag-fill me-2"></i>{{ categorie.nom }}
+                    </h5>
+                    <span class="badge bg-light text-dark rounded-pill">
+                        {{ categorie.taches|length }} tâche(s)
+                    </span>
+                </div>
+                <div class="card-body">
+                    {% if categorie.description %}
+                    <p class="card-text">{{ categorie.description }}</p>
+                    {% else %}
+                    <p class="text-muted fst-italic">Aucune description</p>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-light d-flex justify-content-between">
+                    <a href="{{ url_for('categories.editer', categorie_id=categorie.id) }}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-pencil-square me-1"></i> Modifier
+                    </a>
+                    <a href="{{ url_for('categories.supprimer', categorie_id=categorie.id) }}" 
+                       class="btn btn-sm btn-outline-danger delete-btn">
+                        <i class="bi bi-trash me-1"></i> Supprimer
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info shadow-sm" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+            <div>
+                <h5 class="alert-heading mb-1">Aucune catégorie</h5>
+                <p class="mb-0">Vous n'avez pas encore créé de catégories. 
+                    <a href="{{ url_for('categories.nouvelle') }}" class="alert-link">Créez votre première catégorie</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
