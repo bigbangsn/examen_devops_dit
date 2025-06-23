@@ -14,12 +14,6 @@ pipeline {
             }
         }
 
-        stage('Push to Docker Hub') {
-            steps {
-                sh 'docker push $IMAGE_NAME'
-            }
-        }
-
         stage('Run Docker Container') {
             steps {
                 sh 'docker rm -f $CONTAINER_NAME || true'
