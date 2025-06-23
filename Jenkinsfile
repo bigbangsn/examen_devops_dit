@@ -1,10 +1,5 @@
 pipeline {
-  agent {
-        docker {
-            image 'docker/compose:1.29.2'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
-        }
-    }
+  agent any
 
 
     environment {
@@ -19,6 +14,12 @@ pipeline {
                 git url: 'https://github.com/bigbangsn/examen_devops_dit.git', branch: 'feature/jenkins-setup'
             }
         }
+      
+       stage('Build Image') {
+            steps {
+                sh 'docker build -t $IMAGE_NAME .'
+            }
+        }
 
        stage('Run Docker Build') {
             steps {
@@ -27,13 +28,7 @@ pipeline {
             }
         }
 
-        stage('Build & Run with Docker Compose') {
-    steps {
-        sh 'docker-compose down || true'     // Arrête les conteneurs existants (s'il y en a)
-        sh 'docker-compose build'            // Construit les images à partir du Dockerfile
-        sh 'docker-compose up -d'            // Lance les conteneurs en arrière-plan
-    }
-}
+      
         stage('Cleanup') {
             steps {
                 sh 'docker rmi $IMAGE_NAME || true'
