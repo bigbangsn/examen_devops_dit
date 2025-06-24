@@ -51,12 +51,12 @@ pipeline {
             echo "Pipeline terminé."
         }
       success {
-        mail to: 'goudoussy909@gmail.com',
+        mail to: 'Momohsadialiou99@gmail.com,adacoulsw@gmail.com,goudoussy2000@gmail.com',
              subject: "Build Success: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
              body: "Build completer avec succès"
     }
     failure {
-        mail to: 'goudoussy909@gmail.com',
+        mail to: 'Momohsadialiou99@gmail.com,adacoulsw@gmail.co,goudoussy2000@gmail.com',
              subject: "Le build a echoué: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
              body: "Build a echoué , merci de verifier "
     }
