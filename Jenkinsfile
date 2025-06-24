@@ -1,11 +1,13 @@
 pipeline {
   agent any
 
-
     environment {
         IMAGE_NAME = "flask-app"
         CONTAINER_NAME = "flask-app-container"
         COMPOSE_PROJECT_NAME = "flaskci"
+        DOCKERHUB_CREDENTIALS = 'dockerhub'
+        DOCKERHUB_USERNAME = 'ton_nom_utilisateur_dockerhub'
+        IMAGE_TAG = "${DOCKERHUB_USERNAME}/${IMAGE_NAME}:latest"
     }
 
     stages {
@@ -24,14 +26,22 @@ pipeline {
        stage('Run Docker Build') {
             steps {
                 sh 'docker rm -f $CONTAINER_NAME || true'
-                sh 'docker run -d --name $CONTAINER_NAME -p 5000:5000 $IMAGE_NAME'
+                sh 'docker run -d --name $CONTAINER_NAME -p 5000:5000 $IMAGE_TAG'
             }
         }
-
       
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: "$DOCKERHUB_CREDENTIALS", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    sh 'echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin'
+                    sh 'docker push $IMAGE_TAG'
+                    sh 'docker logout'
+                }
+            }
+          }
         stage('Cleanup') {
             steps {
-                sh 'docker rmi $IMAGE_NAME || true'
+              sh 'docker rmi $IMAGE_TAG || true'
             }
         }
     }
@@ -40,5 +50,16 @@ pipeline {
         always {
             echo "Pipeline terminé."
         }
+      success {
+        mail to: 'goudoussy909@gmail.com',
+             subject: "Build Success: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
+             body: "Build completer avec succès"
+    }
+    failure {
+        mail to: 'goudoussy909@gmail.com',
+             subject: "Le build a echoué: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
+             body: "Build a echoué , merci de verifier "
+    }
+      
     }
 }
